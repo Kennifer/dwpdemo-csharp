@@ -65,6 +65,11 @@ namespace DWP.Demo.UnitTests.Controllers
         private readonly IGetUsersByCity _getUsersByCity;
         private readonly IUserDistanceFilter _userDistanceFilter;
 
+        private const string City = "London";
+        private const double LondonLatitude = 51.509865;
+        private const double LondonLongitude = -0.118092;
+        private const double MaxDistance = 50.0;
+
         public UserController(IGetUsers getUsers, IGetUsersByCity getUsersByCity, IUserDistanceFilter userDistanceFilter)
         {
             _getUsers = getUsers;
@@ -74,7 +79,17 @@ namespace DWP.Demo.UnitTests.Controllers
 
         public async Task<IActionResult> Get()
         {
-            return Ok();
+            var getUsersTask = _getUsers.Execute();
+            var getUsersByCityTask = _getUsersByCity.Execute(City);
+
+            await Task.WhenAll(getUsersTask, getUsersByCityTask);
+
+            var removedUsers = _userDistanceFilter.RemoveUsersWithDistanceGreaterThan(
+                getUsersByCityTask.Result, LondonLatitude, LondonLongitude, MaxDistance);
+
+            var allUsers = getUsersTask.Result.Concat(removedUsers);
+
+            return Ok(allUsers);
         }
     }
 }
