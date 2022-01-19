@@ -101,6 +101,27 @@ namespace DWP.Demo.UnitTests
             Assert.That(users, Is.Not.Null);
             Assert.That(users, Is.Empty);
         }
+
+        [TestCase(HttpStatusCode.BadRequest)]
+        [TestCase(HttpStatusCode.InternalServerError)]
+        public async Task Execute_InvalidHttpResponse_ReturnsEmptyList(HttpStatusCode status)
+        {
+            const string city = "manchester";
+            const string requestUrl = "/city/manchester/users";
+            
+            var httpResponse = new HttpResponseMessage(status);
+            
+            var httpClient = new Mock<IHttpClient>();
+            httpClient.Setup(x => x.GetAsync(requestUrl))
+                .ReturnsAsync(httpResponse);
+
+            var sut = new GetUsersByCity(httpClient.Object);
+
+            var users = await sut.Execute(city);
+
+            Assert.That(users, Is.Not.Null);
+            Assert.That(users, Is.Empty);
+        }
     }
 
     public interface IGetUsersByCity
