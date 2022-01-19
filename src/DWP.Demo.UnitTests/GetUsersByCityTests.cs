@@ -159,9 +159,14 @@ namespace DWP.Demo.UnitTests
             var url = BuildUrl(city);
 
             var response = await _httpClient.GetAsync(url);
-            var body = await response.Content.ReadAsStringAsync();
+            if (response.IsSuccessStatusCode)
+            {
+                var body = await response.Content.ReadAsStringAsync();
 
-            return MapOut(body);
+                return MapOut(body);
+            }
+
+            return Enumerable.Empty<User>();
         }
 
         private IEnumerable<User> MapOut(string body)
