@@ -75,9 +75,22 @@ namespace DWP.Demo.UnitTests.Service
             _distanceCalculator = distanceCalculator;
         }
 
-        public IEnumerable<User> RemoveUsersWithDistanceGreaterThanSource(IEnumerable<User> users, double latitude, double longitude, double distance)
+        public IEnumerable<User> RemoveUsersWithDistanceGreaterThanSource(IEnumerable<User> users, double latitude,
+            double longitude, double distance)
         {
-            throw new System.NotImplementedException();
+            var toReturn = new List<User>();
+            foreach (var user in users)
+            {
+                var distanceBetween =
+                    _distanceCalculator.DistanceBetween(latitude, longitude, user.Latitude, user.Longitude);
+
+                if (distanceBetween <= distance)
+                {
+                    toReturn.Add(user);
+                }
+            }
+
+            return toReturn;
         }
     }
 }
