@@ -1,14 +1,14 @@
-using System.Collections.Generic;
 using System.Linq;
+using DWP.Demo.Api.Domain.Filters;
 using DWP.Demo.Api.Domain.GeoSpatial;
 using DWP.Demo.Api.Types;
 using Moq;
 using NUnit.Framework;
 
-namespace DWP.Demo.UnitTests.Service
+namespace DWP.Demo.UnitTests.Domain.Filters
 {
     [TestFixture]
-    public class GeoSpatialServiceTests
+    public class UserDistanceFilterTests
     {
         [Test]
         public void FindUsersWithinDistanceOf_ReturnsResults()
@@ -51,46 +51,13 @@ namespace DWP.Demo.UnitTests.Service
                     x.DistanceBetween(sourceLatitude, sourceLongitude, invalidUserLatitude, invalidUserLongitude))
                 .Returns(invalidDistance);
 
-            var sut = new GeoSpatialService(distanceCalculator.Object);
+            var sut = new UserDistanceFilter(distanceCalculator.Object);
 
-            var result = sut.RemoveUsersWithDistanceGreaterThanSource(users, sourceLatitude, sourceLongitude, distance);
+            var result = sut.RemoveUsersWithDistanceGreaterThan(users, sourceLatitude, sourceLongitude, distance);
 
             Assert.That(result, Is.Not.Null);
             Assert.That(result.Count(), Is.EqualTo(1));
             Assert.That(result.Single().Id, Is.EqualTo(validUserId));
-        }
-    }
-
-    public interface IGeoSpatialService
-    {
-        IEnumerable<User> RemoveUsersWithDistanceGreaterThanSource(IEnumerable<User> users, double latitude, double longitude, double distance);
-    }
-
-    public class GeoSpatialService : IGeoSpatialService
-    {
-        private readonly IDistanceCalculator _distanceCalculator;
-
-        public GeoSpatialService(IDistanceCalculator distanceCalculator)
-        {
-            _distanceCalculator = distanceCalculator;
-        }
-
-        public IEnumerable<User> RemoveUsersWithDistanceGreaterThanSource(IEnumerable<User> users, double latitude,
-            double longitude, double distance)
-        {
-            var toReturn = new List<User>();
-            foreach (var user in users)
-            {
-                var distanceBetween =
-                    _distanceCalculator.DistanceBetween(latitude, longitude, user.Latitude, user.Longitude);
-
-                if (distanceBetween <= distance)
-                {
-                    toReturn.Add(user);
-                }
-            }
-
-            return toReturn;
         }
     }
 }
