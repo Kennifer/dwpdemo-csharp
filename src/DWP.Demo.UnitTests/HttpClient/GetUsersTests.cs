@@ -142,9 +142,15 @@ namespace DWP.Demo.UnitTests.HttpClient
         public async Task<IEnumerable<User>> Execute()
         {
             var response = await _httpClient.GetAsync(_url);
-            var body = await response.Content.ReadAsStringAsync();
 
-            return MapOut(body);
+            if (response.IsSuccessStatusCode)
+            {
+                var body = await response.Content.ReadAsStringAsync();
+
+                return MapOut(body);
+            }
+
+            return Enumerable.Empty<User>();
         }
 
         private IEnumerable<User> MapOut(string body)
