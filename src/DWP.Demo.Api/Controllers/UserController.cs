@@ -32,9 +32,9 @@ namespace DWP.Demo.Api.Controllers
             await Task.WhenAll(getUsersTask, getUsersByCityTask);
 
             var removedUsers = _userDistanceFilter.RemoveUsersWithDistanceGreaterThan(
-                getUsersByCityTask.Result, LondonLatitude, LondonLongitude, MaxDistance);
+                getUsersTask.Result, LondonLatitude, LondonLongitude, MaxDistance);
 
-            var allUsers = getUsersTask.Result.Concat(removedUsers).Distinct();
+            var allUsers = getUsersByCityTask.Result.Concat(removedUsers).Distinct();
 
             return Ok(allUsers);
         }
