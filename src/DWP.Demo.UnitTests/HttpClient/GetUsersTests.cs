@@ -17,11 +17,21 @@ namespace DWP.Demo.UnitTests.HttpClient
     public class GetUsersTests
     {
         [Test]
-        public async Task Execute_ReturnsListOfUsers()
+        public async Task Execute_NoUsers_ReturnsEmptyList()
         {
-            const string url = "/users";
+            const string requestUrl = "/users";
+            const string responseString = "[ ]";
 
-            var sut = new GetUsers(default);
+            var httpResponse = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(responseString, Encoding.UTF8, "application/json")
+            };
+            
+            var httpClient = new Mock<IHttpClient>();
+            httpClient.Setup(x => x.GetAsync(requestUrl))
+                .ReturnsAsync(httpResponse);
+
+            var sut = new GetUsers(httpClient.Object);
 
             var users = await sut.Execute();
             
@@ -32,7 +42,7 @@ namespace DWP.Demo.UnitTests.HttpClient
         }
 
         [Test]
-        public async Task Execute_ManyResults_ReturnsUsers()
+        public async Task Execute_ManyUsers_ReturnsUsers()
         {
             const string requestUrl = "/users";
             const string responseString =
@@ -90,7 +100,6 @@ namespace DWP.Demo.UnitTests.HttpClient
             Assert.That(user2.IpAddress, Is.EqualTo("192.168.0.2"));
             Assert.That(user2.Latitude, Is.EqualTo(2.1234567));
             Assert.That(user2.Longitude, Is.EqualTo(-2.1234567));
-            
         }
     }
 
