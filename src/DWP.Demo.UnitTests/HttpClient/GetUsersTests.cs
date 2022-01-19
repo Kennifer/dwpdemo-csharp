@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using DWP.Demo.Api.HttpClient;
+using DWP.Demo.Api.Logging;
 using DWP.Demo.Api.Types;
 using Moq;
 using Newtonsoft.Json;
@@ -31,7 +32,7 @@ namespace DWP.Demo.UnitTests.HttpClient
             httpClient.Setup(x => x.GetAsync(requestUrl))
                 .ReturnsAsync(httpResponse);
 
-            var sut = new GetUsers(httpClient.Object);
+            var sut = new GetUsers(httpClient.Object, Mock.Of<ILogger>());
 
             var users = await sut.Execute();
             
@@ -76,7 +77,7 @@ namespace DWP.Demo.UnitTests.HttpClient
             httpClient.Setup(x => x.GetAsync(requestUrl))
                 .ReturnsAsync(httpResponse);
 
-            var sut = new GetUsers(httpClient.Object);
+            var sut = new GetUsers(httpClient.Object, Mock.Of<ILogger>());
 
             var users = await sut.Execute();
 
@@ -114,12 +115,33 @@ namespace DWP.Demo.UnitTests.HttpClient
             httpClient.Setup(x => x.GetAsync(requestUrl))
                 .ReturnsAsync(httpResponse);
 
-            var sut = new GetUsers(httpClient.Object);
+            var sut = new GetUsers(httpClient.Object, Mock.Of<ILogger>());
 
             var users = await sut.Execute();
 
             Assert.That(users, Is.Not.Null);
             Assert.That(users, Is.Empty);
+        }
+        
+        [Test]
+        public async Task Execute_InvalidHttpResponse_LogsError()
+        {
+            const string expectedUrl = "/users";
+            const HttpStatusCode expectedStatusCode = HttpStatusCode.BadRequest; 
+            
+            var httpResponse = new HttpResponseMessage(HttpStatusCode.BadRequest);
+            
+            var httpClient = new Mock<IHttpClient>();
+            httpClient.Setup(x => x.GetAsync(expectedUrl))
+                .ReturnsAsync(httpResponse);
+
+            var logger = new Mock<ILogger>();
+            
+            var sut = new GetUsers(httpClient.Object, logger.Object);
+
+            _ = await sut.Execute();
+
+            logger.Verify(x => x.LogWarning(It.IsAny<string>(), expectedUrl, expectedStatusCode));
         }
     }
 
@@ -134,7 +156,7 @@ namespace DWP.Demo.UnitTests.HttpClient
 
         private readonly string _url = "/users";
 
-        public GetUsers(IHttpClient httpClient)
+        public GetUsers(IHttpClient httpClient, ILogger logger)
         {
             _httpClient = httpClient;
         }
