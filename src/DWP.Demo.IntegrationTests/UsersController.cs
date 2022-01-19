@@ -4,15 +4,15 @@ using NUnit.Framework;
 namespace DWP.Demo.IntegrationTests
 {
     [TestFixture]
-    public class HealthCheckTests
+    public class UsersController
     {
         [Test]
-        public async Task HappyPath_ReturnsOk()
+        public async Task Users_HappyPath()
         {
             var apiFixture = new ApiFixture(default);
             _ = apiFixture.Start();
 
-            var response = await apiFixture.ApiClient.GetAsync("health");
+            var response = await apiFixture.ApiClient.GetAsync("users");
 
             Assert.IsTrue(response.IsSuccessStatusCode);
         }

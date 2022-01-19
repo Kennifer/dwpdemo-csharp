@@ -12,5 +12,6 @@
 * Actual logging hasn't been implemented but a proxy class for logging has been used, where direct logging would occur. Usually logs would also be taken in middleware during requests.
 * A rudimentary implementation of the Great-circle distance has been implemented, due to libraries being thin on the ground, no time has been spent checking the validity of this
  
-## In Hindsight
+## In Hindsight/Not Done
 * A struct should have been used for Lat/Long
+* A futher integration test could be written, where instead of using the source API, a mock API is supplied (via configuration) instead.  This would allow finer control, and testing of the data supplied from the source API and the final presented result.

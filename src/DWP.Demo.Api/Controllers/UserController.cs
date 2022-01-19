@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DWP.Demo.Api.Controllers
 {
+    [Route("users")]
     public class UserController : Controller
     {
         private readonly IGetUsers _getUsers;
