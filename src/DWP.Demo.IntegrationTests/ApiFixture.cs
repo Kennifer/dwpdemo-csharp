@@ -3,11 +3,11 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Sockets;
 using System.Threading.Tasks;
-using dwp.demo.api;
+using DWP.Demo.Api;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 
-namespace dwp.demo.integrationtests
+namespace DWP.Demo.IntegrationTests
 {
     public class ApiFixture
     {

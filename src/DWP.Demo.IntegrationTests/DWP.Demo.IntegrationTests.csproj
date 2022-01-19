@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\dwp.demo.api\dwp.demo.api.csproj" />
+    <ProjectReference Include="..\DWP.Demo.Api\DWP.Demo.Api.csproj" />
   </ItemGroup>
 
 </Project>

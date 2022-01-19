@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace dwp.demo.integrationtests
+namespace DWP.Demo.IntegrationTests
 {
     [TestClass]
     public class HealthCheckTests

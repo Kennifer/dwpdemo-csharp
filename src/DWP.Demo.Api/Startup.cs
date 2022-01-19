@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using dwp.demo.api.HealthChecks;
+using DWP.Demo.Api.HealthChecks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
@@ -12,7 +12,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 
-namespace dwp.demo.api
+namespace DWP.Demo.Api
 {
     public class Startup
     {

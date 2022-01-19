@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-namespace dwp.demo.api.HealthChecks
+namespace DWP.Demo.Api.HealthChecks
 {
     public static class ResponseWriter
     {

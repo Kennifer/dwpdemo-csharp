@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 
-namespace dwp.demo.api
+namespace DWP.Demo.Api
 {
     public class Program
     {
