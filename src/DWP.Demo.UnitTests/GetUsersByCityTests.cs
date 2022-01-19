@@ -5,6 +5,8 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Moq;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using NUnit.Framework;
 
 namespace DWP.Demo.UnitTests
@@ -50,7 +52,7 @@ namespace DWP.Demo.UnitTests
                 {
                     ""id"": 1,
                     ""first_name"": ""fn1"",
-                    ""last_name"": ""su1"",
+                    ""last_name"": ""ln1"",
                     ""email"": ""email@1.com"",
                     ""ip_address"": ""192.168.0.1"",
                     ""latitude"": 1.1234567,
@@ -59,7 +61,7 @@ namespace DWP.Demo.UnitTests
                 {
                     ""id"": 2,
                     ""first_name"": ""fn2"",
-                    ""last_name"": ""su2"",
+                    ""last_name"": ""ln2"",
                     ""email"": ""email@2.com"",
                     ""ip_address"": ""192.168.0.2"",
                     ""latitude"": 2.1234567,
@@ -137,9 +139,20 @@ namespace DWP.Demo.UnitTests
         {
             var url = BuildUrl(city);
 
-            await _httpClient.GetAsync(url);
-            return Enumerable.Empty<User>();
+            var response = await _httpClient.GetAsync(url);
+            var body = await response.Content.ReadAsStringAsync();
+
+            return MapOut(body);
         }
+
+        private IEnumerable<User> MapOut(string body)
+            => JsonConvert.DeserializeObject<IEnumerable<User>>(body, new JsonSerializerSettings()
+            {
+                ContractResolver = new DefaultContractResolver
+                {
+                    NamingStrategy = new SnakeCaseNamingStrategy()
+                }
+            });
 
         private string BuildUrl(string city)
             => $"/city/{city}/users";
