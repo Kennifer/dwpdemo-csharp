@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using DWP.Demo.Api.Logging;
+using DWP.Demo.Api.Domain.Logging;
 using DWP.Demo.Api.Types;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
-namespace DWP.Demo.Api.HttpClient.Implementation
+namespace DWP.Demo.Api.Domain.HttpClient.Implementation
 {
     public class GetUsers : IGetUsers
     {
