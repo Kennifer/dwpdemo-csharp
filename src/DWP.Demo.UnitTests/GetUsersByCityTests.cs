@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
 
@@ -14,7 +15,7 @@ namespace DWP.Demo.UnitTests
             
             var sut = new GetUsersByCity();
 
-            var result = sut.Execute(city);
+            var result = await sut.Execute(city);
 
             Assert.That(result, Is.Not.Null);
             Assert.That(result, Is.InstanceOf<IEnumerable<User>>());
@@ -32,9 +33,9 @@ namespace DWP.Demo.UnitTests
 
     public class GetUsersByCity : IGetUsersByCity
     {
-        public Task<IEnumerable<User>> Execute(string city)
+        public async Task<IEnumerable<User>> Execute(string city)
         {
-            throw new System.NotImplementedException();
+            return Enumerable.Empty<User>();
         }
     }
 }
