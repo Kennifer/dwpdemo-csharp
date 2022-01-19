@@ -17,4 +17,19 @@ namespace DWP.Demo.IntegrationTests
             Assert.IsTrue(response.IsSuccessStatusCode);
         }
     }
+
+    [TestClass]
+    public class UsersController
+    {
+        [TestMethod]
+        public async Task Users_HappyPath()
+        {
+            var apiFixture = new ApiFixture(default);
+            _ = apiFixture.Start();
+
+            var response = await apiFixture.ApiClient.GetAsync("users");
+
+            Assert.IsTrue(response.IsSuccessStatusCode);
+        }
+    }
 }
