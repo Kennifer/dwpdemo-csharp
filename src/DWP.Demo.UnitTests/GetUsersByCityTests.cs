@@ -14,7 +14,7 @@ namespace DWP.Demo.UnitTests
         {
             const string city = "some city";
             
-            var sut = new GetUsersByCity(Mock.Of<IHttpProxy>());
+            var sut = new GetUsersByCity(Mock.Of<IHttpClient>());
 
             var result = await sut.Execute(city);
 
@@ -28,7 +28,7 @@ namespace DWP.Demo.UnitTests
             const string city = "manchester";
             const string expectedRequestAddress = "/city/manchester/users";
 
-            var httpProxy = new Mock<IHttpProxy>();
+            var httpProxy = new Mock<IHttpClient>();
 
             var sut = new GetUsersByCity(httpProxy.Object);
 
@@ -43,7 +43,7 @@ namespace DWP.Demo.UnitTests
         Task<IEnumerable<User>> Execute(string city);
     }
 
-    public interface IHttpProxy
+    public interface IHttpClient
     {
         Task GetAsync(string url);
     }
@@ -54,18 +54,18 @@ namespace DWP.Demo.UnitTests
 
     public class GetUsersByCity : IGetUsersByCity
     {
-        private readonly IHttpProxy _httpProxy;
+        private readonly IHttpClient _httpClient;
 
-        public GetUsersByCity(IHttpProxy httpProxy)
+        public GetUsersByCity(IHttpClient httpClient)
         {
-            _httpProxy = httpProxy;
+            _httpClient = httpClient;
         }
 
         public async Task<IEnumerable<User>> Execute(string city)
         {
             var url = BuildUrl(city);
 
-            await _httpProxy.GetAsync(url);
+            await _httpClient.GetAsync(url);
             return Enumerable.Empty<User>();
         }
 
