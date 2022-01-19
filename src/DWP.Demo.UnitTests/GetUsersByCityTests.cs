@@ -17,9 +17,20 @@ namespace DWP.Demo.UnitTests
         [Test]
         public async Task Execute_ReturnsUsers()
         {
-            const string city = "some city";
+            const string city = "manchester";
+            const string expectedRequestAddress = "/city/manchester/users";
+            const string responseString = "[]";
             
-            var sut = new GetUsersByCity(Mock.Of<IHttpClient>());
+            var httpResponse = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(responseString, Encoding.UTF8, "application/json")
+            };
+            
+            var httpClient = new Mock<IHttpClient>();
+            httpClient.Setup(x => x.GetAsync(expectedRequestAddress))
+                .ReturnsAsync(httpResponse);
+
+            var sut = new GetUsersByCity(httpClient.Object);
 
             var result = await sut.Execute(city);
 
@@ -32,14 +43,22 @@ namespace DWP.Demo.UnitTests
         {
             const string city = "manchester";
             const string expectedRequestAddress = "/city/manchester/users";
+            const string responseString = "[]";
+            
+            var httpResponse = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(responseString, Encoding.UTF8, "application/json")
+            };
+            
+            var httpClient = new Mock<IHttpClient>();
+            httpClient.Setup(x => x.GetAsync(expectedRequestAddress))
+                .ReturnsAsync(httpResponse);
 
-            var httpProxy = new Mock<IHttpClient>();
-
-            var sut = new GetUsersByCity(httpProxy.Object);
+            var sut = new GetUsersByCity(httpClient.Object);
 
             _ = await sut.Execute(city);
 
-            httpProxy.Verify(x => x.GetAsync(expectedRequestAddress));
+            httpClient.Verify(x => x.GetAsync(expectedRequestAddress));
         }
 
         [Test]
