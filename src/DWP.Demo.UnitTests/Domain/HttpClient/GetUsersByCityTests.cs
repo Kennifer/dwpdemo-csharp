@@ -3,13 +3,13 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using DWP.Demo.Api.HttpClient;
-using DWP.Demo.Api.HttpClient.Implementation;
-using DWP.Demo.Api.Logging;
+using DWP.Demo.Api.Domain.HttpClient;
+using DWP.Demo.Api.Domain.HttpClient.Implementation;
+using DWP.Demo.Api.Domain.Logging;
 using Moq;
 using NUnit.Framework;
 
-namespace DWP.Demo.UnitTests.HttpClient
+namespace DWP.Demo.UnitTests.Domain.HttpClient
 {
     [TestFixture]
     public class GetUsersByCityTests

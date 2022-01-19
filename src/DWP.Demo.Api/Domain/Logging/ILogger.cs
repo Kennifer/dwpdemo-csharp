@@ -1,4 +1,4 @@
-namespace DWP.Demo.Api.Logging
+namespace DWP.Demo.Api.Domain.Logging
 {
     public interface ILogger
     {
