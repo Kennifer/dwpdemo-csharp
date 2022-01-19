@@ -122,6 +122,27 @@ namespace DWP.Demo.UnitTests
             Assert.That(users, Is.Not.Null);
             Assert.That(users, Is.Empty);
         }
+
+        [Test]
+        public async Task Execute_InvalidHttpResponse_LogsError()
+        {
+            const string city = "manchester";
+            const string requestUrl = "/city/manchester/users";
+            
+            var httpResponse = new HttpResponseMessage(HttpStatusCode.BadRequest);
+            
+            var httpClient = new Mock<IHttpClient>();
+            httpClient.Setup(x => x.GetAsync(requestUrl))
+                .ReturnsAsync(httpResponse);
+
+            var logger = new Mock<ILogger>();
+            
+            var sut = new GetUsersByCity(httpClient.Object);
+
+            _ = await sut.Execute(city);
+
+            logger.Verify(x => x.LogWarning());
+        }
     }
 
     public interface IGetUsersByCity
@@ -132,6 +153,11 @@ namespace DWP.Demo.UnitTests
     public interface IHttpClient
     {
         Task<HttpResponseMessage> GetAsync(string url);
+    }
+
+    public interface ILogger
+    {
+        void LogWarning();
     }
 
     public record User
