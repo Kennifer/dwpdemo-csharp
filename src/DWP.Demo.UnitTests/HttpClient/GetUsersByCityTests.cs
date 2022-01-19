@@ -1,17 +1,15 @@
-using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using Castle.Core.Internal;
+using DWP.Demo.Api.HttpClient;
+using DWP.Demo.Api.HttpClient.Implementation;
+using DWP.Demo.Api.Logging;
 using Moq;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using NUnit.Framework;
 
-namespace DWP.Demo.UnitTests
+namespace DWP.Demo.UnitTests.HttpClient
 {
     [TestFixture]
     public class GetUsersByCityTests
@@ -144,72 +142,5 @@ namespace DWP.Demo.UnitTests
 
             logger.Verify(x => x.LogWarning(It.IsAny<string>(), expectedUrl, expectedStatusCode));
         }
-    }
-
-    public interface IGetUsersByCity
-    {
-        Task<IEnumerable<User>> Execute(string city);
-    }
-
-    public interface IHttpClient
-    {
-        Task<HttpResponseMessage> GetAsync(string url);
-    }
-
-    public interface ILogger
-    {
-        void LogWarning(string message, params object[] paramsValues);
-    }
-
-    public record User
-    {
-        public int Id { get; init; }
-        public string FirstName { get; init; }
-        public string LastName { get; init; }
-        public string Email { get; init; }
-        public string IpAddress { get; init; }
-        public decimal Latitude { get; init; }
-        public decimal Longitude { get; init; }
-    }
-
-    public class GetUsersByCity : IGetUsersByCity
-    {
-        private readonly IHttpClient _httpClient;
-        private readonly ILogger _logger;
-
-        public GetUsersByCity(IHttpClient httpClient, ILogger logger)
-        {
-            _httpClient = httpClient;
-            _logger = logger;
-        }
-
-        public async Task<IEnumerable<User>> Execute(string city)
-        {
-            var url = BuildUrl(city);
-
-            var response = await _httpClient.GetAsync(url);
-            if (response.IsSuccessStatusCode)
-            {
-                var body = await response.Content.ReadAsStringAsync();
-
-                return MapOut(body);
-            }
-            
-            _logger.LogWarning("Request to {url} failed with status code {statuscode}", url, response.StatusCode);
-
-            return Enumerable.Empty<User>();
-        }
-
-        private IEnumerable<User> MapOut(string body)
-            => JsonConvert.DeserializeObject<IEnumerable<User>>(body, new JsonSerializerSettings()
-            {
-                ContractResolver = new DefaultContractResolver
-                {
-                    NamingStrategy = new SnakeCaseNamingStrategy()
-                }
-            });
-
-        private string BuildUrl(string city)
-            => $"/city/{city}/users";
     }
 }
