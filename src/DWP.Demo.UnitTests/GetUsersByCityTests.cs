@@ -15,54 +15,7 @@ namespace DWP.Demo.UnitTests
     public class GetUsersByCityTests
     {
         [Test]
-        public async Task Execute_ReturnsUsers()
-        {
-            const string city = "manchester";
-            const string expectedRequestAddress = "/city/manchester/users";
-            const string responseString = "[]";
-            
-            var httpResponse = new HttpResponseMessage(HttpStatusCode.OK)
-            {
-                Content = new StringContent(responseString, Encoding.UTF8, "application/json")
-            };
-            
-            var httpClient = new Mock<IHttpClient>();
-            httpClient.Setup(x => x.GetAsync(expectedRequestAddress))
-                .ReturnsAsync(httpResponse);
-
-            var sut = new GetUsersByCity(httpClient.Object);
-
-            var result = await sut.Execute(city);
-
-            Assert.That(result, Is.Not.Null);
-            Assert.That(result, Is.InstanceOf<IEnumerable<User>>());
-        }
-
-        [Test]
-        public async Task Execute_MakesRequest()
-        {
-            const string city = "manchester";
-            const string expectedRequestAddress = "/city/manchester/users";
-            const string responseString = "[]";
-            
-            var httpResponse = new HttpResponseMessage(HttpStatusCode.OK)
-            {
-                Content = new StringContent(responseString, Encoding.UTF8, "application/json")
-            };
-            
-            var httpClient = new Mock<IHttpClient>();
-            httpClient.Setup(x => x.GetAsync(expectedRequestAddress))
-                .ReturnsAsync(httpResponse);
-
-            var sut = new GetUsersByCity(httpClient.Object);
-
-            _ = await sut.Execute(city);
-
-            httpClient.Verify(x => x.GetAsync(expectedRequestAddress));
-        }
-
-        [Test]
-        public async Task Execute_ReturnsCorrectlyPopulatedUsers()
+        public async Task Execute_HappyPath()
         {
             const string city = "manchester";
             const string requestUrl = "/city/manchester/users";
