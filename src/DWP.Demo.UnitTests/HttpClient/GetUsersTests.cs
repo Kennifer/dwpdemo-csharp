@@ -101,6 +101,26 @@ namespace DWP.Demo.UnitTests.HttpClient
             Assert.That(user2.Latitude, Is.EqualTo(2.1234567));
             Assert.That(user2.Longitude, Is.EqualTo(-2.1234567));
         }
+
+        [TestCase(HttpStatusCode.BadRequest)]
+        [TestCase(HttpStatusCode.InternalServerError)]
+        public async Task Execute_InvalidHttpResponse_ReturnsEmptyList(HttpStatusCode status)
+        {
+            const string requestUrl = "/users";
+            
+            var httpResponse = new HttpResponseMessage(status);
+            
+            var httpClient = new Mock<IHttpClient>();
+            httpClient.Setup(x => x.GetAsync(requestUrl))
+                .ReturnsAsync(httpResponse);
+
+            var sut = new GetUsers(httpClient.Object);
+
+            var users = await sut.Execute();
+
+            Assert.That(users, Is.Not.Null);
+            Assert.That(users, Is.Empty);
+        }
     }
 
     public interface IGetUsers
