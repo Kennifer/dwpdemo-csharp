@@ -153,12 +153,14 @@ namespace DWP.Demo.UnitTests.HttpClient
     public class GetUsers : IGetUsers
     {
         private readonly IHttpClient _httpClient;
+        private readonly ILogger _logger;
 
         private readonly string _url = "/users";
 
         public GetUsers(IHttpClient httpClient, ILogger logger)
         {
             _httpClient = httpClient;
+            _logger = logger;
         }
 
         public async Task<IEnumerable<User>> Execute()
@@ -172,6 +174,7 @@ namespace DWP.Demo.UnitTests.HttpClient
                 return MapOut(body);
             }
 
+            _logger.LogWarning("Request to {url} failed with status code {statuscode}", _url, response.StatusCode);
             return Enumerable.Empty<User>();
         }
 
