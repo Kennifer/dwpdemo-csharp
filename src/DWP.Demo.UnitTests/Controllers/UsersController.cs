@@ -176,7 +176,7 @@ namespace DWP.Demo.UnitTests.Controllers
             var removedUsers = _userDistanceFilter.RemoveUsersWithDistanceGreaterThan(
                 getUsersByCityTask.Result, LondonLatitude, LondonLongitude, MaxDistance);
 
-            var allUsers = getUsersTask.Result.Concat(removedUsers);
+            var allUsers = getUsersTask.Result.Concat(removedUsers).Distinct();
 
             return Ok(allUsers);
         }
