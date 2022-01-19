@@ -1,9 +1,11 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Castle.Core.Internal;
 using Moq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -74,6 +76,30 @@ namespace DWP.Demo.UnitTests
             Assert.That(user2.IpAddress, Is.EqualTo("192.168.0.2"));
             Assert.That(user2.Latitude, Is.EqualTo(2.1234567));
             Assert.That(user2.Longitude, Is.EqualTo(-2.1234567));
+        }
+
+        [Test]
+        public async Task Execute_EmptyResults_ReturnsEmptyList()
+        {
+            const string city = "manchester";
+            const string requestUrl = "/city/manchester/users";
+            const string responseString = "[ ]";
+
+            var httpResponse = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(responseString, Encoding.UTF8, "application/json")
+            };
+            
+            var httpClient = new Mock<IHttpClient>();
+            httpClient.Setup(x => x.GetAsync(requestUrl))
+                .ReturnsAsync(httpResponse);
+
+            var sut = new GetUsersByCity(httpClient.Object);
+
+            var users = await sut.Execute(city);
+
+            Assert.That(users, Is.Not.Null);
+            Assert.That(users, Is.Empty);
         }
     }
 
