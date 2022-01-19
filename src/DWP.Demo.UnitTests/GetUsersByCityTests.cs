@@ -52,7 +52,7 @@ namespace DWP.Demo.UnitTests
             httpClient.Setup(x => x.GetAsync(requestUrl))
                 .ReturnsAsync(httpResponse);
 
-            var sut = new GetUsersByCity(httpClient.Object);
+            var sut = new GetUsersByCity(httpClient.Object, Mock.Of<ILogger>());
 
             var users = await sut.Execute(city);
 
@@ -94,7 +94,7 @@ namespace DWP.Demo.UnitTests
             httpClient.Setup(x => x.GetAsync(requestUrl))
                 .ReturnsAsync(httpResponse);
 
-            var sut = new GetUsersByCity(httpClient.Object);
+            var sut = new GetUsersByCity(httpClient.Object, Mock.Of<ILogger>());
 
             var users = await sut.Execute(city);
 
@@ -115,7 +115,7 @@ namespace DWP.Demo.UnitTests
             httpClient.Setup(x => x.GetAsync(requestUrl))
                 .ReturnsAsync(httpResponse);
 
-            var sut = new GetUsersByCity(httpClient.Object);
+            var sut = new GetUsersByCity(httpClient.Object, Mock.Of<ILogger>());
 
             var users = await sut.Execute(city);
 
@@ -127,21 +127,22 @@ namespace DWP.Demo.UnitTests
         public async Task Execute_InvalidHttpResponse_LogsError()
         {
             const string city = "manchester";
-            const string requestUrl = "/city/manchester/users";
+            const string expectedUrl = "/city/manchester/users";
+            const HttpStatusCode expectedStatusCode = HttpStatusCode.BadRequest; 
             
             var httpResponse = new HttpResponseMessage(HttpStatusCode.BadRequest);
             
             var httpClient = new Mock<IHttpClient>();
-            httpClient.Setup(x => x.GetAsync(requestUrl))
+            httpClient.Setup(x => x.GetAsync(expectedUrl))
                 .ReturnsAsync(httpResponse);
 
             var logger = new Mock<ILogger>();
             
-            var sut = new GetUsersByCity(httpClient.Object);
+            var sut = new GetUsersByCity(httpClient.Object, logger.Object);
 
             _ = await sut.Execute(city);
 
-            logger.Verify(x => x.LogWarning());
+            logger.Verify(x => x.LogWarning(It.IsAny<string>(), expectedUrl, expectedStatusCode));
         }
     }
 
@@ -157,7 +158,7 @@ namespace DWP.Demo.UnitTests
 
     public interface ILogger
     {
-        void LogWarning();
+        void LogWarning(string message, params object[] paramsValues);
     }
 
     public record User
@@ -174,10 +175,12 @@ namespace DWP.Demo.UnitTests
     public class GetUsersByCity : IGetUsersByCity
     {
         private readonly IHttpClient _httpClient;
+        private readonly ILogger _logger;
 
-        public GetUsersByCity(IHttpClient httpClient)
+        public GetUsersByCity(IHttpClient httpClient, ILogger logger)
         {
             _httpClient = httpClient;
+            _logger = logger;
         }
 
         public async Task<IEnumerable<User>> Execute(string city)
@@ -191,6 +194,8 @@ namespace DWP.Demo.UnitTests
 
                 return MapOut(body);
             }
+            
+            _logger.LogWarning("Request to {url} failed with status code {statuscode}", url, response.StatusCode);
 
             return Enumerable.Empty<User>();
         }
