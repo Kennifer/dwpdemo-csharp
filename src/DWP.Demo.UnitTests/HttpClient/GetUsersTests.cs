@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using DWP.Demo.Api.HttpClient;
 using DWP.Demo.Api.Types;
 using Moq;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using NUnit.Framework;
 
 namespace DWP.Demo.UnitTests.HttpClient
@@ -19,7 +21,7 @@ namespace DWP.Demo.UnitTests.HttpClient
         {
             const string url = "/users";
 
-            var sut = new GetUsers();
+            var sut = new GetUsers(default);
 
             var users = await sut.Execute();
             
@@ -64,7 +66,7 @@ namespace DWP.Demo.UnitTests.HttpClient
             httpClient.Setup(x => x.GetAsync(requestUrl))
                 .ReturnsAsync(httpResponse);
 
-            var sut = new GetUsers();
+            var sut = new GetUsers(httpClient.Object);
 
             var users = await sut.Execute();
 
@@ -99,9 +101,30 @@ namespace DWP.Demo.UnitTests.HttpClient
     
     public class GetUsers : IGetUsers
     {
+        private readonly IHttpClient _httpClient;
+
+        private readonly string _url = "/users";
+
+        public GetUsers(IHttpClient httpClient)
+        {
+            _httpClient = httpClient;
+        }
+
         public async Task<IEnumerable<User>> Execute()
         {
-            return Enumerable.Empty<User>();
+            var response = await _httpClient.GetAsync(_url);
+            var body = await response.Content.ReadAsStringAsync();
+
+            return MapOut(body);
         }
+
+        private IEnumerable<User> MapOut(string body)
+            => JsonConvert.DeserializeObject<IEnumerable<User>>(body, new JsonSerializerSettings()
+            {
+                ContractResolver = new DefaultContractResolver
+                {
+                    NamingStrategy = new SnakeCaseNamingStrategy()
+                }
+            });
     }
 }
